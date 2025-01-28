@@ -1,0 +1,47 @@
+name: Deploy to Pinata
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Pinata SDK
+        run: npm install @pinata/sdk
+
+      - name: Deploy to Pinata
+        env:
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+        run: |
+          node -e "
+          const pinataSDK = require('@pinata/sdk');
+          const pinata = pinataSDK('$PINATA_API_KEY', '$PINATA_SECRET_API_KEY');
+          const fs = require('fs');
+          const readableStreamForFile = fs.createReadStream('./src/index.html');
+          const options = {
+            pinataMetadata: {
+              name: 'TicTacToe',
+            },
+            pinataOptions: {
+              cidVersion: 0
+            }
+          };
+          pinata.pinFileToIPFS(readableStreamForFile, options).then((result) => {
+            console.log(result);
+          }).catch((err) => {
+            console.log(err);
+          });
+          "
