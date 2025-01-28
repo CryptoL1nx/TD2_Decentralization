@@ -53,7 +53,7 @@ cd TD2_Decentralization
    ```
 3. Copiez le **CID généré** et ouvrez l'URL :
    ```
-   https://ipfs.io/ipfs/YOUR_CID
+   [https://ipfs.io/ipfs/QmeJaufp9seXCpHMFwxX53P3oRQW8Ny1DduCXAxebEwxv7]
    ```
 
 ---
