@@ -1,5 +1,4 @@
-name: Deploy to Pinata
-
+name: Deploy to IPFS via Pinata
 on:
   push:
     branches:
@@ -8,40 +7,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Install Node.js
-        uses: actions/setup-node@v2
+      - name: Set Up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: 16
 
-      - name: Install Pinata SDK
-        run: npm install @pinata/sdk
+      - name: Install Pinata Web3 SDK
+        run: npm install pinata-web3
 
-      - name: Deploy to Pinata
-        env:
-          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
-          PINATA_SECRET_API_KEY: ${{ secrets.PINATA_SECRET_API_KEY }}
+      - name: Upload to Pinata
         run: |
           node -e "
-          const pinataSDK = require('@pinata/sdk');
-          const pinata = pinataSDK('$PINATA_API_KEY', '$PINATA_SECRET_API_KEY');
+          const { Pinata } = require('pinata-web3');
+          const pinata = new Pinata({ pinataApiKey: process.env.PINATA_API_KEY, pinataSecretApiKey: process.env.PINATA_API_SECRET });
+
           const fs = require('fs');
-          const readableStreamForFile = fs.createReadStream('./src/index.html');
-          const options = {
-            pinataMetadata: {
-              name: 'TicTacToe',
-            },
-            pinataOptions: {
-              cidVersion: 0
-            }
-          };
-          pinata.pinFileToIPFS(readableStreamForFile, options).then((result) => {
-            console.log(result);
-          }).catch((err) => {
-            console.log(err);
+          const fileStream = fs.createReadStream('./src/index.html');
+
+          pinata.pinFileToIPFS(fileStream).then(result => {
+            console.log('File pinned successfully:', result);
+          }).catch(error => {
+            console.error('Error pinning file:', error);
           });
           "
+        env:
+          PINATA_API_KEY: ${{ secrets.PINATA_API_KEY }}
+          PINATA_API_SECRET: ${{ secrets.PINATA_API_SECRET }}

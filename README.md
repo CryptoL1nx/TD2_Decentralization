@@ -19,8 +19,6 @@ Ce projet est un simple jeu de **Tic-Tac-Toe**, conçu avec **HTML, CSS et JavaS
 TD2_Decentralization/
 │── src/
 │   ├── index.html       # Fichier principal du jeu Tic-Tac-Toe
-│   ├── style.css        # Feuille de styles CSS
-│   ├── script.js        # Script pour la logique du jeu
 │── LICENSE              # Licence du projet
 │── README.md            # Ce fichier
 │── .github/
